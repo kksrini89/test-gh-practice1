@@ -12,5 +12,30 @@ jobs:
         run: npm run lint
       - name: Test
         run: npm run test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
       - name: Build
         run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifacts@v3
+        with:
+          name: dist-files
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifacts@v3
+        with:
+          name: dist-files
+      - name: Print the dist files
+        run: ls
